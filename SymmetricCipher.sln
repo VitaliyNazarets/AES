@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30517.126
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SymmetricCipher", "SymmetricCipher\SymmetricCipher.csproj", "{D586DBDB-C34A-41F1-8B94-9BFCF6659A74}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SymmetricCipherUnitTests", "SymmetricCipherUnitTests\SymmetricCipherUnitTests.csproj", "{1A27C803-2236-41A3-AF58-F8AF27DE836B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D586DBDB-C34A-41F1-8B94-9BFCF6659A74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D586DBDB-C34A-41F1-8B94-9BFCF6659A74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D586DBDB-C34A-41F1-8B94-9BFCF6659A74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D586DBDB-C34A-41F1-8B94-9BFCF6659A74}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A27C803-2236-41A3-AF58-F8AF27DE836B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A27C803-2236-41A3-AF58-F8AF27DE836B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A27C803-2236-41A3-AF58-F8AF27DE836B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A27C803-2236-41A3-AF58-F8AF27DE836B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5D49D348-083D-4B6E-9338-0AF9017B3B6D}
+	EndGlobalSection
+EndGlobal
