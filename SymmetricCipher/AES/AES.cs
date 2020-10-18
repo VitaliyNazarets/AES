@@ -8,7 +8,7 @@ using System.Xml;
 
 namespace SymmetricCipher.Algorithms
 {
-	public class AES : IEncryptionAlgorithm
+	public class AES : IEncryptionAlgorithmForString, IEncryptionAlgorithm<byte[]>
 	{
 		private const int blockSize = 4;
 		private int _rounds;
@@ -16,13 +16,13 @@ namespace SymmetricCipher.Algorithms
 		private int _keyLength;
 		private string _password;
 		private byte[,] KeySchedule;
+		private byte[] _pass;
 		private delegate bool Delegate(byte[,] input, out byte[,] byteResult);
 
 		public AES(KeyType keyType = KeyType.Small_128)
 		{
 			UpdateKeyType(keyType);
 		}
-
 		public void UpdateKeyType(KeyType keyType)
 		{
 			_keyType = keyType;
@@ -41,7 +41,6 @@ namespace SymmetricCipher.Algorithms
 			_keyLength = (int)keyType / blockSize;
 			KeySchedule = new byte[blockSize, (_rounds + 1) * blockSize];
 		}
-
 		#region PrivateSharedResources
 		private void DataRound(int currentCharacter, string data, StringBuilder sb, Delegate func)
 		{
@@ -63,6 +62,20 @@ namespace SymmetricCipher.Algorithms
 				{
 					sb.Append($"{byteResult[k, j]:x2}");
 				}
+			}
+		}
+
+		private void SetPassword(byte[] key)
+		{
+			if (_pass is null || _pass != key)
+			{
+				byte[,] keyTable = new byte[blockSize, _keyLength];
+				for (int i = 0; i < key.Length; i++)
+				{
+					keyTable[i % blockSize, i / blockSize] = key[i];
+				}
+				_pass = key;
+				KeyExpansion(keyTable);
 			}
 		}
 		private void SetPassword(string key)
@@ -89,7 +102,7 @@ namespace SymmetricCipher.Algorithms
 		{
 			for (int i = 0; i < blockSize; i++)
 			{
-				for (int j = 0; j < blockSize; j++) 
+				for (int j = 0; j < blockSize; j++)
 					state[i, j] ^= KeySchedule[i, j + round * blockSize];
 			}
 		}
@@ -157,9 +170,28 @@ namespace SymmetricCipher.Algorithms
 			}
 			return sb.ToString();
 		}
+
+		public byte[] Encrypt(byte[] value, byte[] password)
+		{
+			SetPassword(password);
+
+			if (_pass != password)
+				SetPassword(password);
+			byte[,] input = new byte[4, 4];
+			for (int i = 0; i < value.Length; i++)
+				input[i % 4, i / 4] = value[i];
+			byte[] outputLine = new byte[16];
+			if (!Encrypt(input, out byte[,] byteResult))
+				throw new Exception("Can't encrypt data");
+			for (int i = 0; i < 4; i++)
+				for (int j = 0; j < 4; j++)
+					outputLine[i * 4 + j] = byteResult[j, i];
+			return outputLine;
+		}
+
 		private bool Encrypt(byte[,] input, out byte[,] output)
 		{
-			var state = (byte[,]) input.Clone();
+			var state = (byte[,])input.Clone();
 			AddRoundKey(ref state, 0);
 			for (int round = 1; round < _rounds; round++)
 			{
@@ -219,7 +251,7 @@ namespace SymmetricCipher.Algorithms
 					state[i, j] = SBox.Data[state[i, j] / 16, state[i, j] % 16];
 		}
 		#endregion
-	
+
 		#region Decrypt
 		public string Decrypt(string data, string key)
 		{
@@ -238,6 +270,25 @@ namespace SymmetricCipher.Algorithms
 			}
 			return sb.ToString();
 		}
+
+		public byte[] Decrypt(byte[] value, byte[] password)
+		{
+			if (value.Length != 16 || password.Length != 16)
+				throw new Exception("Block size not valid");
+			if (_pass != password)
+				SetPassword(password);
+			byte[,] input = new byte[4, 4];
+			for (int i = 0; i < value.Length; i++)
+				input[i % 4, i / 4] = value[i];
+			byte[] outputLine = new byte[16];
+			if (!Decrypt(input, out byte[,] byteResult))
+				throw new Exception("Can't encrypt data");
+			for (int i = 0; i < 4; i++)
+				for (int j = 0; j < 4; j++)
+					outputLine[i * 4 + j] = byteResult[j, i];
+			return outputLine;
+		}
+
 		private bool Decrypt(byte[,] input, out byte[,] output)
 		{
 			var state = (byte[,])input.Clone();

@@ -9,7 +9,7 @@ namespace SymmetricCipher.DataTest
 {
 	public class FileEncryptor
 	{
-		public void DecryptFile(IEncryptionAlgorithm encryptor, string password, Stopwatch stopwatch, string fileReadPath, string fileWritePath)
+		public void DecryptFile(IEncryptionAlgorithmForString encryptor, string password, Stopwatch stopwatch, string fileReadPath, string fileWritePath)
 		{
 			var text = File.ReadAllText(fileReadPath);
 			stopwatch.Start();
@@ -18,7 +18,7 @@ namespace SymmetricCipher.DataTest
 			File.WriteAllText(fileWritePath, result);
 		}
 
-		public void EncryptFile(IEncryptionAlgorithm encryptor, string password, Stopwatch stopwatch, string fileReadPath, string fileWritePath )
+		public void EncryptFile(IEncryptionAlgorithmForString encryptor, string password, Stopwatch stopwatch, string fileReadPath, string fileWritePath )
 		{
 			var text = File.ReadAllText(fileReadPath);
 			stopwatch.Start();
