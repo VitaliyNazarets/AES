@@ -1,5 +1,4 @@
-﻿using SymmetricCipher.AESStreamModes;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -7,15 +6,21 @@ using System.Text;
 
 namespace SymmetricCipher.DataTest
 {
-	public class ECBTest
+	public class Salsa20Test
 	{
 		public void Run(Stopwatch stopwatch, byte[] data)
 		{
-			byte[] password = new byte[16] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
-			ElectronicCodeBook ecb = new ElectronicCodeBook();
-			ecb.SetPassword(password);
+			byte[] password = new byte[32];
+			for (int i = 0; i < password.Length; i++)
+				password[i] = (byte)i;
+
+			Salsa20 salsa20 = new Salsa20();
+			salsa20.SetPassword(password);
+			int size = 64;
 			byte[] encryptedData = new byte[data.Length];
 			byte[] decryptedData = new byte[data.Length];
+			for (int i = 0; i < size; i++)
+				data[i] = (byte)(i % 256);
 			stopwatch.Reset();
 			stopwatch.Start();
 			for (int i = 0; i < data.Length / 64; i++)
@@ -23,7 +28,7 @@ namespace SymmetricCipher.DataTest
 				var dataToEncrypt = data.Skip(i * 64).Take(64).ToArray();
 				if (dataToEncrypt.Length != 64)
 					Array.Resize(ref dataToEncrypt, 64);
-				encryptedData.InsertInto(i, ecb.Encrypt(dataToEncrypt));
+				encryptedData.InsertInto(i, salsa20.Encrypt(dataToEncrypt));
 			}
 			stopwatch.Stop();
 			Console.WriteLine(string.Format("{0:00}:{1:00}:{2:00}.{3:00}",
@@ -37,7 +42,7 @@ namespace SymmetricCipher.DataTest
 				var dataToDecrypt = data.Skip(i * 64).Take(64).ToArray();
 				if (dataToDecrypt.Length != 64)
 					Array.Resize(ref dataToDecrypt, 64);
-				decryptedData.InsertInto(i, ecb.Encrypt(dataToDecrypt));
+				decryptedData.InsertInto(i, salsa20.Decrypt(dataToDecrypt));
 			}
 			stopwatch.Stop();
 			Console.WriteLine(string.Format("{0:00}:{1:00}:{2:00}.{3:00}",

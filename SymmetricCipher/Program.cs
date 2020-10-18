@@ -12,20 +12,17 @@ namespace SymmetricCipher
 	{
 		static void Main(string[] args)
 		{
-			byte[] password = new byte[32];
-			for (int i = 0; i < password.Length; i++)
-				password[i] = (byte)i;
-
-			Salsa20 salsa20 = new Salsa20();
-			salsa20.SetPassword(password);
-			int size = 64;
-			byte[] data = new byte[size];
-			for (int i = 0; i < size; i++)
-				data[i] = (byte)(i % 256);
-			var encryptedData = salsa20.Encrypt(data);
-			var decryptedData = salsa20.Decrypt(encryptedData);
-			Console.WriteLine(string.Join(" ", encryptedData));
-			Console.WriteLine(string.Join(" ", decryptedData));
+			Stopwatch stopwatch = new Stopwatch();
+			Salsa20Test salsa20Test = new Salsa20Test();
+			Console.WriteLine("Salsa 20");
+			var file = File.ReadAllBytes(@"E:\Projects\SymmetricCipher\SymmetricCipher\SymmetricCipher\DataTest\test.txt");
+			salsa20Test.Run(stopwatch,file);
+			Console.WriteLine("RC4");
+			RC4DataTest test = new RC4DataTest();
+			test.Run(stopwatch, file);
+			Console.WriteLine("ECB");
+			ECBTest ecb = new ECBTest();
+			ecb.Run(stopwatch, file);
 			Console.ReadKey();
 		}
 	}
