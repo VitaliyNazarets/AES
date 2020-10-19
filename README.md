@@ -14,3 +14,14 @@ encryption time 22:00.43
 decryption time 40:09.21
 
 implementation according to official documentation https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.197.pdf
+_____________________________________________
+
+Salsa20
+100 mb file:
+encryption time 0:18.23
+decryption time 0:17.94 
+
+RC4
+100 mb file:
+encryption time 0:15.63
+decryption time 0:15.81
