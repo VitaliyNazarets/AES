@@ -6,46 +6,48 @@ namespace SymmetricCipherUnitTests
 {
 	public class UnitTestsAES
 	{
-		readonly AES aES128 = new AES(KeyType.Small_128);
-		readonly AES aes192 = new AES(KeyType.Medium_192);
-		readonly AES aes256 = new AES(KeyType.Big_256);
-		[Fact]
-		public void C1AES128_Encrypt()
+		[Theory]
+		[InlineData(KeyType.Small_128, "00112233445566778899aabbccddeeff", "000102030405060708090a0b0c0d0e0f", "69c4e0d86a7b0430d8cdb78070b4c55a")]
+		[InlineData(KeyType.Medium_192, "00112233445566778899aabbccddeeff", "000102030405060708090a0b0c0d0e0f1011121314151617", "dda97ca4864cdfe06eaf70a0ec0d7191")]
+		[InlineData(KeyType.Big_256, "00112233445566778899aabbccddeeff", "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+			"8ea2b7ca516745bfeafc49904b496089")]
+		public void AES_Encrypt(KeyType keyType, string data, string key, string encryptedData)
 		{
-			var result = aES128.Encrypt("00112233445566778899aabbccddeeff", "000102030405060708090a0b0c0d0e0f");
-			Assert.True(result == "69c4e0d86a7b0430d8cdb78070b4c55a", "C.1 AES 128 Encrypt failed");
-		}
-		[Fact]
-		public void C1EAS128_Decrypt()
-		{
-			var result = aES128.Decrypt("69c4e0d86a7b0430d8cdb78070b4c55a", "000102030405060708090a0b0c0d0e0f");
-			Assert.True(result == "00112233445566778899aabbccddeeff", "C.1 AES 128 Decrypt failed");
-		}
-		[Fact]
-		public void C2AES192_Encrypt()
-		{
-			var result = aes192.Encrypt("00112233445566778899aabbccddeeff", "000102030405060708090a0b0c0d0e0f1011121314151617");
-			Assert.True(result == "dda97ca4864cdfe06eaf70a0ec0d7191", "C.2 AES 192 Encrypt failed");
-		}
-		[Fact]
-		public void C2AES192_Decrypt()
-		{
-				var result = aes192.Decrypt("dda97ca4864cdfe06eaf70a0ec0d7191", "000102030405060708090a0b0c0d0e0f1011121314151617");
-				Assert.True(result == "00112233445566778899aabbccddeeff", "C.2 AES 192Decrypt failed");
+			var aes =  new AES(keyType);
+			var result = aes.Encrypt(data, key);
+			Assert.True(result == encryptedData, "AES Encrypt failed");
 		}
 
-		[Fact]
-		public void C2AES256_Encrypt()
+		[Theory]
+		[InlineData("")]
+		[InlineData("123")]
+		public void AES128_EncryptInvalidKeyLengthThrowsException(string key)
 		{
-			var result = aes256.Encrypt("00112233445566778899aabbccddeeff", "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f");
-			Assert.True(result ==
-			"8ea2b7ca516745bfeafc49904b496089", "C.3 AES 256 Encrypt failed");
+			var aes = new AES(KeyType.Small_128);
+			Assert.Throws<Exception>(() => aes.Encrypt("data", key));
 		}
-		[Fact]
-		public void C2AES256_Decrypt()
+
+		[Theory]
+		[InlineData(KeyType.Small_128, "69c4e0d86a7b0430d8cdb78070b4c55a", "000102030405060708090a0b0c0d0e0f", "00112233445566778899aabbccddeeff")]
+		[InlineData(KeyType.Medium_192, "dda97ca4864cdfe06eaf70a0ec0d7191", "000102030405060708090a0b0c0d0e0f1011121314151617", "00112233445566778899aabbccddeeff")]
+		[InlineData(KeyType.Big_256, "8ea2b7ca516745bfeafc49904b496089", "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+			"00112233445566778899aabbccddeeff")]
+		public void AES_Decrypt(KeyType keyType, string encryptedData, string key, string data)
 		{
-			var result = aes256.Decrypt("8ea2b7ca516745bfeafc49904b496089", "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f");
-			Assert.True(result =="00112233445566778899aabbccddeeff", "C.2 AES 256 Decrypt failed");
+			var aes = new AES(keyType);
+			var result = aes.Decrypt(encryptedData, key);
+			Assert.True(result == data, "AES Encrypt failed");
+		}
+
+		[Theory]
+		[InlineData("")]
+		[InlineData("1")]
+		[InlineData("1234567890")]
+		public void AES_smallerThanExpectedBlockNotCrypted(string text)
+		{
+			var aes = new AES();
+			var encrypted = aes.Encrypt(text, "000102030405060708090a0b0c0d0e0f");
+			Assert.True(encrypted == text);
 		}
 	}
 }
